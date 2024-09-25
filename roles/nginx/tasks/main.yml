@@ -1,0 +1,26 @@
+---
+- name: Copy Nginx configuration template
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/conf.d/app.conf
+    mode: '0644'
+  notify: Restart Nginx
+
+- name: Test Nginx configuration before reload
+  command: nginx -t
+  register: nginx_test_result
+  changed_when: false
+  failed_when: "'successful' not in nginx_test_result.stdout"
+
+- name: Reload Nginx if configuration is valid
+  systemd:
+    name: nginx
+    state: reloaded
+  when: nginx_test_result.rc == 0
+  tags: nginx
+
+- name: Ensure Nginx is running and enabled
+  systemd:
+    name: nginx
+    state: started
+    enabled: true

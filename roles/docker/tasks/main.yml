@@ -1,0 +1,21 @@
+---
+- name: Ensure Docker is installed
+  apt:
+    name: docker.io
+    state: present
+  tags: docker
+
+- name: Ensure Docker Compose is installed
+  get_url:
+    url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}
+    dest: /usr/local/bin/docker-compose
+    mode: '0755'
+  when: ansible_architecture == 'x86_64'  # Только для x86 архитектуры
+  tags: docker
+
+- name: Ensure Docker service is enabled and running
+  systemd:
+    name: docker
+    state: started
+    enabled: true
+  tags: docker

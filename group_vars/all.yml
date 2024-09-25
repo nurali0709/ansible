@@ -1,0 +1,4 @@
+mysql_root_password: supersecurepassword
+mysql_database: my_app_db
+mysql_user: app_user
+mysql_password: securepassword

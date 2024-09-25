@@ -1,0 +1,30 @@
+---
+- name: Create application directory
+  file:
+    path: /opt/myapp
+    state: directory
+    mode: '0755'
+
+- name: Copy docker-compose.yml to server
+  copy:
+    src: files/docker-compose.yml
+    dest: /opt/myapp/docker-compose.yml
+    mode: '0644'
+
+- name: Copy Dockerfile to server
+  copy:
+    src: files/Dockerfile
+    dest: /opt/myapp/Dockerfile
+    mode: '0644'
+
+- name: Run docker-compose to start application
+  command: docker-compose up -d
+  args:
+    chdir: /opt/myapp
+
+- name: Ensure the app containers are running
+  docker_container:
+    name: nginx
+    state: started
+    restart_policy: always
+  register: app_container_status
